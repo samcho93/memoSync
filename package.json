@@ -1,0 +1,48 @@
+{
+  "name": "memosync",
+  "productName": "memoSync",
+  "version": "1.0.0",
+  "description": "클라우드 폴더로 동기화되는 Windows용 반투명 포스트잇 메모",
+  "main": "main/index.js",
+  "author": "memoSync",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "test:e2e": "node e2e/run.js",
+    "icons": "node scripts/make-icons.js",
+    "build": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.memosync.app",
+    "productName": "memoSync",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main/**",
+      "renderer/**",
+      "assets/**",
+      "preload.js"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "memoSync"
+    }
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3"
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
+    "playwright-core": "^1.64.1"
+  }
+}

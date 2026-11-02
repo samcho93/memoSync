@@ -1,0 +1,26 @@
+/* 투명 창은 Windows 기본 테두리 크기 조절을 쓸 수 없어 직접 처리한다 */
+.rz {
+  position: absolute;
+  z-index: 5;
+  -webkit-app-region: no-drag;
+}
+
+.rz-n { top: 0; left: 10px; right: 10px; height: 4px; cursor: ns-resize; }
+.rz-s { bottom: 0; left: 10px; right: 10px; height: 5px; cursor: ns-resize; }
+.rz-e { top: 10px; bottom: 10px; right: 0; width: 5px; cursor: ew-resize; }
+.rz-w { top: 10px; bottom: 10px; left: 0; width: 5px; cursor: ew-resize; }
+.rz-nw { top: 0; left: 0; width: 8px; height: 8px; cursor: nwse-resize; }
+.rz-ne { top: 0; right: 0; width: 8px; height: 8px; cursor: nesw-resize; }
+.rz-sw { bottom: 0; left: 0; width: 10px; height: 10px; cursor: nesw-resize; }
+.rz-se {
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 55%, var(--ink-soft) 55% 62%, transparent 62% 74%, var(--ink-soft) 74% 81%, transparent 81%);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+body:hover .rz-se { opacity: 0.7; }

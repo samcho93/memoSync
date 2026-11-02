@@ -1,0 +1,144 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f5f1;
+  --panel: #ffffff;
+  --text: #1f1e1b;
+  --muted: #65625a;
+  --line: #dcd9d0;
+  --accent: #8a6a00;
+  --accent-text: #ffffff;
+  --ok: #2c6e2f;
+  --warn: #a2471a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d1c1a;
+    --panel: #282724;
+    --text: #efede6;
+    --muted: #aba79c;
+    --line: #3f3d38;
+    --accent: #e6c04f;
+    --accent-text: #1d1c1a;
+    --ok: #86cb89;
+    --warn: #eb9b72;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Segoe UI", sans-serif;
+}
+
+main {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 18px 20px 24px;
+}
+
+h1 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+section {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+p { margin: 0 0 8px; }
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hint:empty { display: none; }
+
+.path {
+  padding: 7px 9px;
+  border-radius: 5px;
+  background: var(--bg);
+  font: 12.500px/1.45 Consolas, "Malgun Gothic", monospace;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+section > .path:last-child { margin-bottom: 0; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+button {
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover { border-color: var(--muted); }
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.status {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ok);
+}
+
+.status[data-state="offline"] { color: var(--warn); }
+
+.check {
+  display: flex;
+  gap: 9px;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  accent-color: var(--accent);
+}
+
+.check small {
+  display: block;
+  color: var(--muted);
+  font-size: 12.500px;
+}

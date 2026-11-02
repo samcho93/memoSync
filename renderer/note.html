@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'">
+  <title>memoSync 메모</title>
+  <link rel="stylesheet" href="note.css">
+  <link rel="stylesheet" href="resize.css">
+</head>
+<body>
+  <main class="note" id="note" data-color="yellow">
+    <header class="bar">
+      <button class="icon" id="btn-new" type="button" title="새 메모" aria-label="새 메모">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+      </button>
+      <span class="bar-space"></span>
+      <button class="icon" id="btn-attach" type="button" title="파일 공유" aria-label="파일 공유">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m13 7.500-5.300 5.300a3.200 3.200 0 0 1-4.500-4.500l5.500-5.500a2.100 2.100 0 0 1 3 3l-5.400 5.400a1 1 0 0 1-1.500-1.400l5-5"/></svg>
+      </button>
+      <button class="icon" id="btn-style" type="button" title="색상과 투명도" aria-label="색상과 투명도" aria-expanded="false" aria-controls="panel">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2c2.4 2.9 4 4.9 4 7a4 4 0 0 1-8 0c0-2.100 1.600-4.100 4-7z"/></svg>
+      </button>
+      <button class="icon" id="btn-top" type="button" title="항상 위" aria-label="항상 위" aria-pressed="false">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.500 2.500h5M6.500 2.500v4L4.500 9h7l-2-2.500v-4M8 9v4.500"/></svg>
+      </button>
+      <button class="icon" id="btn-delete" type="button" title="삭제" aria-label="삭제">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.500h10M6.500 4.500V3h3v1.500M4.500 4.500l.6 8.500h5.800l.6-8.500"/></svg>
+      </button>
+    </header>
+
+    <section class="panel" id="panel" hidden>
+      <div class="swatches" id="swatches" role="group" aria-label="색상"></div>
+      <label class="slider">
+        <span>투명도</span>
+        <input id="opacity" type="range" min="0" max="85" step="1">
+        <output id="opacity-value" for="opacity"></output>
+      </label>
+      <div class="font-row">
+        <label class="font-family">
+          <span>글꼴</span>
+          <select id="font"></select>
+        </label>
+        <label>
+          <span>크기</span>
+          <select id="font-size"></select>
+        </label>
+      </div>
+    </section>
+
+    <section class="confirm" id="confirm" role="alertdialog" aria-labelledby="confirm-text" hidden>
+      <p id="confirm-text">이 메모를 모든 PC에서 삭제할까요?</p>
+      <div class="confirm-actions">
+        <button class="danger" id="confirm-yes" type="button">삭제</button>
+        <button id="confirm-no" type="button">취소</button>
+      </div>
+    </section>
+
+    <textarea id="content" placeholder="메모를 입력하세요" aria-label="메모 내용"></textarea>
+
+    <section class="files" id="files" aria-label="공유 파일" hidden>
+      <ul id="file-list"></ul>
+    </section>
+    <p class="file-message" id="file-message" role="status" hidden></p>
+    <div class="drop-hint" id="drop-hint" hidden>여기에 놓으면 모든 PC에 공유됩니다</div>
+
+    <div class="rz rz-n" data-edge="n"></div>
+    <div class="rz rz-s" data-edge="s"></div>
+    <div class="rz rz-e" data-edge="e"></div>
+    <div class="rz rz-w" data-edge="w"></div>
+    <div class="rz rz-ne" data-edge="ne"></div>
+    <div class="rz rz-nw" data-edge="nw"></div>
+    <div class="rz rz-sw" data-edge="sw"></div>
+    <div class="rz rz-se" data-edge="se"></div>
+  </main>
+  <script src="resize.js"></script>
+  <script src="note.js"></script>
+</body>
+</html>

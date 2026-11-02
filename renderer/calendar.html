@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'">
+  <title>memoSync 달력</title>
+  <link rel="stylesheet" href="calendar.css">
+  <link rel="stylesheet" href="resize.css">
+</head>
+<body>
+  <main class="calendar">
+    <header class="bar">
+      <button class="icon" id="btn-prev" type="button" title="이전 달" aria-label="이전 달">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>
+      </button>
+      <h1 id="month-title" aria-live="polite"></h1>
+      <button class="icon" id="btn-next" type="button" title="다음 달" aria-label="다음 달">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+      </button>
+      <button class="today-button" id="btn-today" type="button">오늘</button>
+      <span class="bar-space"></span>
+      <button class="icon" id="btn-style" type="button" title="투명도" aria-label="투명도" aria-expanded="false" aria-controls="panel">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.200c2.400 2.900 4 4.900 4 7a4 4 0 0 1-8 0c0-2.100 1.600-4.100 4-7z"/></svg>
+      </button>
+      <button class="icon" id="btn-top" type="button" title="항상 위" aria-label="항상 위" aria-pressed="false">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.500 2.500h5M6.500 2.500v4L4.500 9h7l-2-2.500v-4M8 9v4.500"/></svg>
+      </button>
+      <button class="icon" id="btn-hide" type="button" title="달력 숨기기" aria-label="달력 숨기기">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+      </button>
+    </header>
+
+    <section class="panel" id="panel" hidden>
+      <label class="slider">
+        <span>투명도</span>
+        <input id="opacity" type="range" min="0" max="85" step="1">
+        <output id="opacity-value" for="opacity"></output>
+      </label>
+    </section>
+
+    <div class="weekdays" aria-hidden="true">
+      <span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <section class="day-list" id="day-list" hidden>
+      <h2 id="day-title"></h2>
+      <ul id="day-events"></ul>
+    </section>
+
+    <div class="rz rz-n" data-edge="n"></div>
+    <div class="rz rz-s" data-edge="s"></div>
+    <div class="rz rz-e" data-edge="e"></div>
+    <div class="rz rz-w" data-edge="w"></div>
+    <div class="rz rz-ne" data-edge="ne"></div>
+    <div class="rz rz-nw" data-edge="nw"></div>
+    <div class="rz rz-sw" data-edge="sw"></div>
+    <div class="rz rz-se" data-edge="se"></div>
+  </main>
+  <script src="resize.js"></script>
+  <script src="calendar.js"></script>
+</body>
+</html>

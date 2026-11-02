@@ -1,0 +1,332 @@
+:root {
+  --ink: #1d1a14;
+  --ink-soft: rgba(29, 26, 20, 0.62);
+  --outline: rgba(255, 255, 255, var(--outline-alpha));
+  --halo:
+    1px 0 0 var(--outline), -1px 0 0 var(--outline), 0 1px 0 var(--outline), 0 -1px 0 var(--outline),
+    1px 1px 0 var(--outline), -1px -1px 0 var(--outline), 1px -1px 0 var(--outline), -1px 1px 0 var(--outline),
+    0 0 3px var(--outline);
+  --outline-alpha: 0.4;
+  --note-alpha: 0.85;
+  --note-rgb: 255, 232, 130;
+  font-family: "Malgun Gothic", "Segoe UI", sans-serif;
+}
+
+.note[data-color="yellow"] { --note-rgb: 255, 232, 130; --accent: #a97f00; }
+.note[data-color="pink"] { --note-rgb: 255, 190, 205; --accent: #b83a63; }
+.note[data-color="green"] { --note-rgb: 186, 233, 164; --accent: #3f7f22; }
+.note[data-color="blue"] { --note-rgb: 174, 218, 255; --accent: #1f6bab; }
+.note[data-color="purple"] { --note-rgb: 214, 196, 255; --accent: #6a46b8; }
+.note[data-color="gray"] { --note-rgb: 222, 222, 218; --accent: #5c5c58; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(var(--note-rgb), min(1, calc(var(--note-alpha) + 0.35)));
+  background: rgba(var(--note-rgb), var(--note-alpha));
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* 드래그는 상단 바에서만 된다 */
+.bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+  padding: 0 5px;
+  background: rgba(var(--note-rgb), min(1, calc(var(--note-alpha) * 0.5 + 0.45)));
+  -webkit-app-region: drag;
+}
+
+.bar-space { flex: 1; }
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.12s, background-color 0.12s;
+  -webkit-app-region: no-drag;
+}
+
+.note:hover .icon,
+.note:focus-within .icon { opacity: 0.8; }
+.icon:hover { background: rgba(0, 0, 0, 0.1); opacity: 1 !important; }
+.icon[aria-pressed="true"],
+.icon[aria-expanded="true"] { background: rgba(0, 0, 0, 0.16); opacity: 1; }
+/* 항상 위가 켜져 있으면 마우스를 올리지 않아도 표시한다 */
+.icon[aria-pressed="true"] { opacity: 0.8; }
+
+.icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  opacity: 1;
+}
+
+.panel,
+.confirm {
+  flex: none;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(var(--note-rgb), 0.97);
+  font-size: 12px;
+}
+
+.panel[hidden],
+.confirm[hidden] { display: none; }
+
+/* 창이 작아도 패널의 모든 항목에 닿을 수 있게 한다 */
+.panel {
+  max-height: calc(100vh - 30px);
+  overflow-y: auto;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+}
+
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.swatch[data-swatch="yellow"] { background: rgb(255, 232, 130); }
+.swatch[data-swatch="pink"] { background: rgb(255, 190, 205); }
+.swatch[data-swatch="green"] { background: rgb(186, 233, 164); }
+.swatch[data-swatch="blue"] { background: rgb(174, 218, 255); }
+.swatch[data-swatch="purple"] { background: rgb(214, 196, 255); }
+.swatch[data-swatch="gray"] { background: rgb(222, 222, 218); }
+
+.slider {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.slider input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent);
+}
+
+.slider output {
+  width: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.font-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.font-row .font-family { flex: 1; }
+
+.font-row select {
+  min-width: 0;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
+  font: inherit;
+}
+
+.font-row .font-family select { flex: 1; width: 100%; }
+
+.confirm p {
+  margin: 0 0 7px;
+  line-height: 1.4;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.confirm-actions button {
+  min-height: 26px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+  font: inherit;
+}
+
+.confirm-actions button:hover { background: #fff; }
+.confirm-actions .danger { border-color: #a32020; background: #b92b2b; color: #fff; }
+.confirm-actions .danger:hover { background: #a32020; }
+
+/* 배경이 아무리 투명해도 글자는 불투명하게 두고, 어두운 바탕에서도 보이도록 투명할수록 진한 밝은 윤곽선을 준다 */
+textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 8px 12px 12px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  color: var(--ink);
+  font: 500 var(--note-font-size, 14px)/1.5 var(--note-font, "Malgun Gothic", "Segoe UI", sans-serif);
+  text-shadow: var(--halo);
+  -webkit-app-region: no-drag;
+}
+
+textarea::placeholder {
+  color: var(--ink-soft);
+  text-shadow: var(--halo);
+}
+
+textarea::selection {
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  text-shadow: none;
+}
+
+.files {
+  flex: none;
+  max-height: 38vh;
+  padding: 3px 5px 5px;
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
+  background: rgba(var(--note-rgb), 0.92);
+  overflow-y: auto;
+}
+
+.files[hidden],
+.file-message[hidden],
+.drop-hint[hidden] { display: none; }
+
+.files ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  min-height: 26px;
+  border-radius: 5px;
+}
+
+.file:hover,
+.file:focus-within { background: rgba(0, 0, 0, 0.07); }
+
+.file-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 5px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  font: 12px/1.4 "Malgun Gothic", "Segoe UI", sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  flex: none;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 파일 줄의 버튼은 키보드와 마우스로 줄에 닿았을 때만 보인다 */
+.file .icon { flex: none; opacity: 0; }
+.file:hover .icon,
+.file:focus-within .icon { opacity: 0.8; }
+
+.file-message {
+  flex: none;
+  margin: 0;
+  padding: 4px 10px;
+  background: rgba(var(--note-rgb), 0.97);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.file-message[data-kind="error"] { color: #a01818; font-weight: 600; }
+
+.drop-hint {
+  position: absolute;
+  inset: 4px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  border: 2px dashed var(--ink);
+  border-radius: 8px;
+  background: rgba(var(--note-rgb), 0.95);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+
+textarea::-webkit-scrollbar { width: 8px; }
+textarea::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3) padding-box;
+}
+
