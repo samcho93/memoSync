@@ -78,4 +78,30 @@ function collectEvents(notes, currentYear) {
   })));
 }
 
-module.exports = { findDate, restOf, toDateKey, parseLine, parseSchedules, collectEvents, localDateKey };
+// PDF 가져오기로 만든 메모의 첫 줄("홍길동 일정 (근무표.pdf)")
+const IMPORT_HEADER_RE = /^\S.* 일정 \(.+\)$/;
+
+/**
+ * 오늘보다 앞선 날짜의 일정 줄을 지운다. 일정이 아닌 줄은 그대로 둔다.
+ * @returns {{ content: string, removed: number, empty: boolean }} empty: 남은 글이 없거나 PDF 가져오기 제목 줄뿐이다.
+ */
+function removePastSchedules(content, today) {
+  const currentYear = Number(today.slice(0, 4));
+  const lines = content.split(/(?<=\n)/);
+  const kept = lines.filter((line) => {
+    const schedule = parseLine(line.replace(/\r?\n$/, ''), currentYear);
+    return !schedule || schedule.date >= today;
+  });
+  const removed = lines.length - kept.length;
+  let next = kept.join('');
+  // 마지막 줄을 지워 끝에 줄바꿈만 남으면 원래처럼 줄바꿈 없이 끝낸다.
+  if (removed && !/\n$/.test(content)) next = next.replace(/\r?\n$/, '');
+  const rest = next.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return {
+    content: next,
+    removed,
+    empty: removed > 0 && (rest.length === 0 || (rest.length === 1 && IMPORT_HEADER_RE.test(rest[0]))),
+  };
+}
+
+module.exports = { findDate, restOf, toDateKey, parseLine, parseSchedules, collectEvents, localDateKey, removePastSchedules };

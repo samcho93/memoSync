@@ -11,6 +11,7 @@ const { cascadeBounds } = require('./display');
 const { CalendarWindow } = require('./calendar');
 const { SharedFiles } = require('./sharedFiles');
 const { PdfImport } = require('./pdfImport');
+const { PastScheduleCleaner } = require('./pastSchedules');
 const { AppTray, buildTemplate } = require('./tray');
 const { registerIpc } = require('./ipc');
 
@@ -33,6 +34,7 @@ function start() {
   let calendar;
   let sharedFiles;
   let pdfImport;
+  let cleaner;
   let tray = null;
   let settingsWindow = null;
   let quitState = 'running';
@@ -180,6 +182,7 @@ function start() {
         syncFolder: syncFolder(),
         isCustomFolder: !!settings.get('syncFolder'),
         syncPosition: settings.get('syncPosition'),
+        removePastSchedules: cleaner.enabled,
         autoStart: controller.isAutoStart(),
         deviceId: settings.get('deviceId'),
         status: notes.status,
@@ -216,6 +219,12 @@ function start() {
       return controller.settingsView();
     },
 
+    setRemovePastSchedules(value) {
+      settings.set('removePastSchedules', value);
+      if (value) cleaner.check({ force: true });
+      return controller.settingsView();
+    },
+
     isAutoStart() {
       // 사용자 지정 name을 쓰면 openAtLogin은 항상 false로 나오므로 launchItems로 판단한다.
       const { name, ...query } = loginItemOptions();
@@ -247,6 +256,7 @@ function start() {
       await windows.flushRenderers();
       windows.commitPendingBounds();
       calendar.destroy();
+      cleaner.stop();
       await notes.stop();
       await settings.flush();
     } catch (err) {
@@ -280,9 +290,16 @@ function start() {
       notes.on(event, () => calendar.scheduleRefresh());
     }
     sharedFiles = new SharedFiles({ notes, windows });
+    cleaner = new PastScheduleCleaner({
+      notes,
+      windows,
+      settings,
+      refreshNote: (id) => windows.send(id, 'note:state', noteView(id)),
+    });
     pdfImport = new PdfImport({ calendar, settings, createNote: (content) => controller.newNote({ content }) });
     notes.on('attachments', (id) => sharedFiles.refresh(id));
     notes.on('status', () => {
+      cleaner.check();
       sharedFiles.refreshAll();
       if (tray) tray.refresh();
       if (settingsWindow) settingsWindow.webContents.send('settings:status', notes.status);
@@ -305,6 +322,7 @@ function start() {
     }
     calendar.open();
     tray = new AppTray(controller);
+    cleaner.start();
 
     // 화면 구성이 바뀌면 저장된 위치를 기준으로 다시 맞춘다.
     const refit = () => {
@@ -319,7 +337,7 @@ function start() {
     screen.on('display-metrics-changed', refit);
 
     if (process.env.MEMOSYNC_E2E) {
-      globalThis.memoSyncTest = { controller, notes, windows, calendar, pdfImport, settings, tray, trayTemplate: () => buildTemplate(controller) };
+      globalThis.memoSyncTest = { controller, notes, windows, calendar, pdfImport, cleaner, settings, tray, trayTemplate: () => buildTemplate(controller) };
     }
 
     await notes.setStore(new FolderStore({ folder: syncFolder() }));

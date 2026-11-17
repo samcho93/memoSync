@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld('memoSettings', {
   chooseFolder: () => ipcRenderer.invoke('settings:choose-folder'),
   resetFolder: () => ipcRenderer.invoke('settings:reset-folder'),
   setSyncPosition: (value) => ipcRenderer.invoke('settings:set-sync-position', value),
+  setRemovePastSchedules: (value) => ipcRenderer.invoke('settings:set-remove-past', value),
   setAutoStart: (value) => ipcRenderer.invoke('settings:set-auto-start', value),
   openFolder: () => ipcRenderer.invoke('settings:open-folder'),
   onStatus: (callback) => listen('settings:status', callback),

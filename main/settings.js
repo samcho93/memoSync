@@ -11,6 +11,8 @@ const DEFAULTS = {
   deviceId: '',
   syncFolder: '',
   syncPosition: false,
+  // 날짜가 지난 일정 줄을 메모에서 지운다.
+  removePastSchedules: true,
   notesHidden: false,
   // id → { x, y, width, height, alwaysOnTop }
   layouts: {},
