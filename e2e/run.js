@@ -90,6 +90,11 @@ async function main() {
   const userB = path.join(base, 'userB');
   const folder = path.join(base, 'cloud');
   await fs.mkdir(folder);
+  // 다른 단계의 시험 메모("3월 5일 치과" 등)가 지난 일정으로 지워지지 않게 처음에는 끈다. 해당 단계에서 A만 켠다.
+  for (const dir of [userA, userB]) {
+    await fs.mkdir(dir);
+    await fs.writeFile(path.join(dir, 'settings.json'), JSON.stringify({ removePastSchedules: false }));
+  }
   let a;
   let b;
   try {
@@ -549,6 +554,53 @@ async function main() {
 
       await a.evaluate((_electron, noteId) => globalThis.memoSyncTest.notes.remove(noteId), added.id);
       await waitFor(async () => (await titlesOn(b)).length === 0, 'B에서 가져온 메모 제거');
+    });
+
+    await step('지난 일정은 메모와 달력에서 지워지고 다른 PC에도 반영된다', async () => {
+      const key = (offset) => {
+        const d = new Date();
+        d.setDate(d.getDate() + offset);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      };
+      const contentOf = (app, noteId) => app.evaluate((_electron, nid) => {
+        const note = globalThis.memoSyncTest.notes.get(nid);
+        return note && !note.deleted ? note.content : null;
+      }, noteId);
+      // B에서 만들어 A에서는 포커스가 없는 창으로 열린다.
+      const mixed = await b.evaluate((_electron, text) => globalThis.memoSyncTest.notes.create({ content: text }).id,
+        `장보기
+${key(-1)} 지난 회의
+${key(0)} 오늘 회의
+${key(1)} 내일 회의`);
+      const onlyPast = await b.evaluate((_electron, text) => globalThis.memoSyncTest.notes.create({ content: text }).id,
+        `홍길동 일정 (시간표.pdf)
+${key(-2)} 1~7교시 실습`);
+      await waitFor(async () => (await contentOf(a, mixed)) !== null && (await contentOf(a, onlyPast)) !== null, 'A에 메모 도착');
+      await waitFor(() => a.evaluate((_electron, ids) => ids.every((nid) => globalThis.memoSyncTest.windows.has(nid)), [mixed, onlyPast]), 'A에 창 열림');
+      const pastOnCalendar = (app) => app.evaluate((_electron, day) => globalThis.memoSyncTest.calendar.view().events.some((event) => event.date === day), key(-1));
+      assert.equal(await pastOnCalendar(a), true);
+
+      // 설정을 끄면 지우지 않는다.
+      await a.evaluate(() => globalThis.memoSyncTest.controller.setRemovePastSchedules(false));
+      assert.equal(await a.evaluate(() => globalThis.memoSyncTest.cleaner.check({ force: true })), 0);
+      assert.equal(await a.evaluate(() => globalThis.memoSyncTest.controller.settingsView().removePastSchedules), false);
+      // 다시 켜는 즉시 정리한다.
+      await a.evaluate(() => globalThis.memoSyncTest.controller.setRemovePastSchedules(true));
+
+      const expected = `장보기
+${key(0)} 오늘 회의
+${key(1)} 내일 회의`;
+      await waitFor(async () => (await contentOf(a, mixed)) === expected, 'A 메모에서 지난 일정 제거');
+      await waitFor(async () => (await contentOf(b, mixed)) === expected, 'B 메모에도 반영');
+      const pageMixed = await pageOf(a, mixed);
+      await waitFor(async () => (await pageMixed.locator('#content').inputValue()) === expected, 'A 창 내용 갱신');
+      await waitFor(async () => (await contentOf(b, onlyPast)) === null, '일정만 있던 메모는 B에서도 삭제');
+      await waitFor(() => b.evaluate((_electron, nid) => !globalThis.memoSyncTest.windows.has(nid), onlyPast), 'B 창 닫힘');
+      assert.equal(await pastOnCalendar(a), false);
+      await waitFor(async () => !(await pastOnCalendar(b)), 'B 달력에서 제거');
+
+      await a.evaluate((_electron, nid) => globalThis.memoSyncTest.notes.remove(nid), mixed);
+      await waitFor(async () => (await contentOf(b, mixed)) === null, '정리용 메모 삭제');
     });
 
     await step('A에서 확인 후 삭제 → 파일은 tombstone, B 창 닫힘', async () => {

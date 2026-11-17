@@ -27,6 +27,7 @@ function show(view) {
     : '아직 이 PC 안의 기본 폴더를 쓰고 있어 다른 PC와 동기화되지 않습니다.';
   $('reset').disabled = !view.isCustomFolder;
   $('sync-position').checked = view.syncPosition;
+  $('remove-past').checked = view.removePastSchedules;
   $('auto-start').checked = view.autoStart;
   $('device').textContent = view.deviceId;
   showStatus(view.status);
@@ -36,6 +37,7 @@ $('choose').addEventListener('click', async () => show(await api.chooseFolder())
 $('reset').addEventListener('click', async () => show(await api.resetFolder()));
 $('open').addEventListener('click', () => api.openFolder());
 $('sync-position').addEventListener('change', async (event) => show(await api.setSyncPosition(event.target.checked)));
+$('remove-past').addEventListener('change', async (event) => show(await api.setRemovePastSchedules(event.target.checked)));
 $('auto-start').addEventListener('change', async (event) => show(await api.setAutoStart(event.target.checked)));
 
 api.onStatus(showStatus);

@@ -79,6 +79,7 @@ function registerIpc({ notes, windows, calendar, sharedFiles, pdfImport, control
   ipcMain.handle('settings:choose-folder', settingsHandler(() => controller.chooseSyncFolder()));
   ipcMain.handle('settings:reset-folder', settingsHandler(() => controller.setSyncFolder('')));
   ipcMain.handle('settings:set-sync-position', settingsHandler((value) => controller.setSyncPosition(value === true)));
+  ipcMain.handle('settings:set-remove-past', settingsHandler((value) => controller.setRemovePastSchedules(value === true)));
   ipcMain.handle('settings:set-auto-start', settingsHandler((value) => controller.setAutoStart(value === true)));
   ipcMain.handle('settings:open-folder', settingsHandler(() => controller.openSyncFolder()));
 }

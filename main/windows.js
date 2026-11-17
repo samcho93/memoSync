@@ -42,6 +42,12 @@ class WindowManager {
     return entry ? entry.win : undefined;
   }
 
+  // 포커스가 있는 메모는 입력 중일 수 있다. 렌더러가 저장 전인 글을 갖고 있으면 바깥에서 바꾼 내용을 다시 덮어쓴다.
+  isEditing(id) {
+    const win = this.windowOf(id);
+    return !!win && !win.isDestroyed() && win.isFocused();
+  }
+
   idOf(webContents) {
     for (const [id, entry] of this.entries) {
       if (!entry.win.isDestroyed() && entry.win.webContents === webContents) return id;
