@@ -10,6 +10,7 @@ const { WindowManager, lockNavigation, PRELOAD, ROOT } = require('./windows');
 const { cascadeBounds } = require('./display');
 const { CalendarWindow } = require('./calendar');
 const { SharedFiles } = require('./sharedFiles');
+const { PdfImport } = require('./pdfImport');
 const { AppTray, buildTemplate } = require('./tray');
 const { registerIpc } = require('./ipc');
 
@@ -31,6 +32,7 @@ function start() {
   let windows;
   let calendar;
   let sharedFiles;
+  let pdfImport;
   let tray = null;
   let settingsWindow = null;
   let quitState = 'running';
@@ -112,9 +114,9 @@ function start() {
   const controller = {
     noteView,
 
-    newNote() {
+    newNote(fields = {}) {
       if (windows.hiddenAll) controller.showAll();
-      return notes.create();
+      return notes.create(fields);
     },
 
     showAll() {
@@ -278,6 +280,7 @@ function start() {
       notes.on(event, () => calendar.scheduleRefresh());
     }
     sharedFiles = new SharedFiles({ notes, windows });
+    pdfImport = new PdfImport({ calendar, settings, createNote: (content) => controller.newNote({ content }) });
     notes.on('attachments', (id) => sharedFiles.refresh(id));
     notes.on('status', () => {
       sharedFiles.refreshAll();
@@ -290,6 +293,7 @@ function start() {
       windows,
       calendar,
       sharedFiles,
+      pdfImport,
       controller,
       isSettingsSender: (sender) => !!settingsWindow && settingsWindow.webContents === sender,
     });
@@ -315,7 +319,7 @@ function start() {
     screen.on('display-metrics-changed', refit);
 
     if (process.env.MEMOSYNC_E2E) {
-      globalThis.memoSyncTest = { controller, notes, windows, calendar, settings, tray, trayTemplate: () => buildTemplate(controller) };
+      globalThis.memoSyncTest = { controller, notes, windows, calendar, pdfImport, settings, tray, trayTemplate: () => buildTemplate(controller) };
     }
 
     await notes.setStore(new FolderStore({ folder: syncFolder() }));

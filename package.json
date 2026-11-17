@@ -28,7 +28,13 @@
       "main/**",
       "renderer/**",
       "assets/**",
-      "preload.js"
+      "preload.js",
+      "!node_modules/@napi-rs/**",
+      "!node_modules/pdfjs-dist/{build,web,image_decoders,types,wasm,iccs}/**",
+      "!node_modules/pdfjs-dist/legacy/web/**",
+      "!node_modules/pdfjs-dist/legacy/build/*.{map,d.mts}",
+      "!node_modules/pdfjs-dist/legacy/build/*.min.mjs",
+      "!node_modules/pdfjs-dist/legacy/build/pdf.{sandbox,renderer}.*"
     ],
     "win": {
       "target": "nsis",
@@ -42,7 +48,8 @@
     }
   },
   "dependencies": {
-    "chokidar": "^4.0.3"
+    "chokidar": "^4.0.3",
+    "pdfjs-dist": "6.5.438"
   },
   "devDependencies": {
     "electron": "^45.2.1",

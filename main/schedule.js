@@ -29,17 +29,17 @@ function localDateKey(now = new Date()) {
   return toDateKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
 }
 
-function cleanTitle(before, after) {
+function cleanTitle(before, after, fallback = DEFAULT_TITLE) {
   const rest = after.replace(WEEKDAY_RE, '');
   const title = `${before} ${rest}`
     .replace(LEADING_BULLET_RE, '')
     .replace(TRAILING_PUNCT_RE, '')
     .replace(/\s+/g, ' ');
-  return (title || DEFAULT_TITLE).slice(0, MAX_TITLE_LENGTH);
+  return (title || fallback).slice(0, MAX_TITLE_LENGTH);
 }
 
-// 한 줄에서 일정 하나를 읽는다. 날짜가 없거나 없는 날짜면 null
-function parseLine(line, currentYear) {
+// 한 줄에서 첫 날짜와 그 앞뒤 글자를 찾는다. 날짜가 없거나 없는 날짜면 null
+function findDate(line, currentYear) {
   if (SEPARATOR_RE.test(line)) return null;
   for (const format of FORMATS) {
     const match = format.re.exec(line);
@@ -48,11 +48,20 @@ function parseLine(line, currentYear) {
     if (format.year && match[format.year].length === 2) year += 2000;
     const date = toDateKey(year, Number(match[format.month]), Number(match[format.day]));
     if (!date) return null;
-    const before = line.slice(0, match.index);
-    const after = line.slice(match.index + match[0].length);
-    return { date, title: cleanTitle(before, after) };
+    return { date, before: line.slice(0, match.index), after: line.slice(match.index + match[0].length) };
   }
   return null;
+}
+
+// 날짜를 빼고 남은 글자. 요일·글머리표만 있으면 빈 문자열
+function restOf(found) {
+  return cleanTitle(found.before, found.after, '');
+}
+
+// 한 줄에서 일정 하나를 읽는다. 날짜가 없거나 없는 날짜면 null
+function parseLine(line, currentYear) {
+  const found = findDate(line, currentYear);
+  return found && { date: found.date, title: cleanTitle(found.before, found.after) };
 }
 
 function parseSchedules(text, currentYear) {
@@ -69,4 +78,4 @@ function collectEvents(notes, currentYear) {
   })));
 }
 
-module.exports = { parseLine, parseSchedules, collectEvents, localDateKey };
+module.exports = { findDate, restOf, toDateKey, parseLine, parseSchedules, collectEvents, localDateKey };

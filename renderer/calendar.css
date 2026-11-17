@@ -269,3 +269,165 @@ input:focus-visible {
   color: var(--ink-soft);
   font-size: 12.500px;
 }
+
+/* ---- PDF에서 일정 가져오기 ---- */
+.calendar { --import-top: 38px; }
+
+.import {
+  position: absolute;
+  inset: var(--import-top) 0 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px 12px 10px;
+  background: rgb(var(--base-rgb));
+  font-size: 12.500px;
+  user-select: text;
+}
+
+.import[hidden],
+.import-list[hidden],
+.drop-hint[hidden] { display: none; }
+
+.import-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.import-head h2 {
+  margin: 0;
+  font-size: 13.500px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 7px;
+  border: 1px solid rgba(29, 26, 20, 0.35);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.import-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+
+.text-button {
+  flex: none;
+  height: 26px;
+  padding: 0 11px;
+  border: 1px solid rgba(29, 26, 20, 0.35);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 12.500px;
+}
+
+.text-button:hover:not(:disabled) { background: #fff; }
+.text-button:disabled { opacity: 0.45; }
+
+.text-button.primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.text-button.primary:hover:not(:disabled) { background: #3a362e; }
+
+.hint,
+.status {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.status:empty { display: none; }
+.status[data-kind="error"] { color: var(--sun); }
+.status[data-kind="busy"]::before { content: "⏳ "; }
+
+.import-list {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.check-all {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+}
+
+.import-list ul {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 2px 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.import-list li label {
+  display: grid;
+  grid-template-columns: auto 92px 1fr;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 8px;
+}
+
+.import-list li label:hover { background: rgba(0, 0, 0, 0.05); }
+
+.import-list .when {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.import-list .what { overflow-wrap: anywhere; }
+
+.import-foot {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drop-hint {
+  position: absolute;
+  inset: 44px 8px 8px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--ink);
+  border-radius: 8px;
+  background: rgba(var(--base-rgb), 0.92);
+  font-size: 14px;
+  font-weight: 700;
+  pointer-events: none;
+}

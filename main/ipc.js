@@ -7,7 +7,7 @@ const { COLORS, MAX_CONTENT_LENGTH, clampOpacity, cleanFont, cleanFontSize } = r
 const RESIZE_EDGES = new Set(['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw']);
 
 // 메모 id는 렌더러가 보낸 값을 믿지 않고 보낸 창에서 찾는다.
-function registerIpc({ notes, windows, calendar, sharedFiles, controller, isSettingsSender }) {
+function registerIpc({ notes, windows, calendar, sharedFiles, pdfImport, controller, isSettingsSender }) {
   const calendarHandler = (handler) => (event, ...args) => {
     if (calendar.isSender(event.sender)) return handler(...args);
     return undefined;
@@ -71,6 +71,9 @@ function registerIpc({ notes, windows, calendar, sharedFiles, controller, isSett
     if (RESIZE_EDGES.has(edge) && Number.isFinite(dx) && Number.isFinite(dy)) calendar.resize(edge, dx, dy);
   }));
   ipcMain.on('calendar:resize-end', calendarHandler(() => calendar.endResize()));
+  ipcMain.handle('calendar:pdf-pick', calendarHandler(() => pdfImport.pick()));
+  ipcMain.handle('calendar:pdf-read', calendarHandler((filePath, person) => pdfImport.read(filePath, person)));
+  ipcMain.handle('calendar:pdf-add', calendarHandler((person, fileName, events) => pdfImport.add(person, fileName, events)));
 
   ipcMain.handle('settings:get', settingsHandler(() => controller.settingsView()));
   ipcMain.handle('settings:choose-folder', settingsHandler(() => controller.chooseSyncFolder()));
