@@ -1,7 +1,7 @@
 {
   "name": "memosync",
   "productName": "memoSync",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "클라우드 폴더로 동기화되는 Windows용 반투명 포스트잇 메모",
   "main": "main/index.js",
   "author": "memoSync",

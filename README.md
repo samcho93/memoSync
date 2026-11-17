@@ -69,7 +69,7 @@ Windows용 반투명 포스트잇 메모 앱입니다. 서버 없이 OneDrive, D
 
 ### 설치 파일로 설치
 
-`dist\memoSync Setup 1.0.0.exe`를 실행합니다. 코드 서명이 되어 있지 않아 Windows SmartScreen 경고가 나올 수 있습니다. 이때는 "추가 정보 → 실행"을 누르세요.
+`dist\memoSync Setup 1.1.0.exe`를 실행합니다. 코드 서명이 되어 있지 않아 Windows SmartScreen 경고가 나올 수 있습니다. 이때는 "추가 정보 → 실행"을 누르세요.
 
 ### 소스에서 실행
 
