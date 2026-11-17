@@ -17,6 +17,10 @@
   "build": {
     "appId": "com.memosync.app",
     "productName": "memoSync",
+    "electronLanguages": [
+      "ko",
+      "en-US"
+    ],
     "directories": {
       "output": "dist"
     },
