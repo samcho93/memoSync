@@ -19,6 +19,9 @@
       </button>
       <button class="today-button" id="btn-today" type="button">오늘</button>
       <span class="bar-space"></span>
+      <button class="icon" id="btn-import" type="button" title="PDF에서 일정 가져오기" aria-label="PDF에서 일정 가져오기" aria-expanded="false" aria-controls="import">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.500 1.500H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5L9.500 1.500zM9.500 1.500V5H13M8 7v5M5.800 9.800 8 12l2.200-2.200"/></svg>
+      </button>
       <button class="icon" id="btn-style" type="button" title="투명도" aria-label="투명도" aria-expanded="false" aria-controls="panel">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.200c2.400 2.900 4 4.900 4 7a4 4 0 0 1-8 0c0-2.100 1.600-4.100 4-7z"/></svg>
       </button>
@@ -37,6 +40,34 @@
         <output id="opacity-value" for="opacity"></output>
       </label>
     </section>
+
+    <section class="import" id="import" hidden aria-labelledby="import-title">
+      <div class="import-head">
+        <h2 id="import-title">PDF에서 일정 가져오기</h2>
+        <button class="icon" id="import-close" type="button" title="닫기" aria-label="닫기">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <label class="field">
+        <span>이름</span>
+        <input id="import-person" type="text" maxlength="40" placeholder="예: 홍길동" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="import-file">
+        <button class="text-button" id="import-pick" type="button">PDF 선택…</button>
+        <span id="import-file-name" class="file-name"></span>
+      </div>
+      <p class="hint" id="import-hint">PDF 시간표·근무표·달력에서 이 이름이 있는 날짜를 찾습니다. PDF를 달력에 끌어다 놓아도 됩니다.</p>
+      <p class="status" id="import-status" role="status"></p>
+      <div class="import-list" id="import-list" hidden>
+        <label class="check-all"><input id="import-all" type="checkbox" checked> <span id="import-count"></span></label>
+        <ul id="import-events"></ul>
+      </div>
+      <div class="import-foot">
+        <button class="text-button primary" id="import-add" type="button" disabled>메모로 추가</button>
+      </div>
+    </section>
+
+    <div class="drop-hint" id="drop-hint" hidden>PDF를 놓으면 일정을 찾습니다</div>
 
     <div class="weekdays" aria-hidden="true">
       <span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span>

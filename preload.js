@@ -38,6 +38,10 @@ contextBridge.exposeInMainWorld('memoCalendar', {
   resizeStart: () => ipcRenderer.send('calendar:resize-start'),
   resizeMove: (edge, dx, dy) => ipcRenderer.send('calendar:resize-move', edge, dx, dy),
   resizeEnd: () => ipcRenderer.send('calendar:resize-end'),
+  pickPdf: () => ipcRenderer.invoke('calendar:pdf-pick'),
+  pathForFile: (file) => webUtils.getPathForFile(file),
+  readPdf: (filePath, person) => ipcRenderer.invoke('calendar:pdf-read', filePath, person),
+  addPdfEvents: (person, fileName, events) => ipcRenderer.invoke('calendar:pdf-add', person, fileName, events),
   onState: (callback) => listen('calendar:state', callback),
 });
 

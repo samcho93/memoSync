@@ -520,6 +520,37 @@ async function main() {
       await waitFor(async () => (await names(pageB)).includes('클라우드에서 도착.txt'), '외부 파일 감지 B');
     });
 
+    await step('달력에서 PDF 시간표의 특정인 일정을 찾아 메모로 추가하면 양쪽 달력에 반영된다', async () => {
+      const calA = await waitFor(() => a.windows().find((w) => w.url().endsWith('calendar.html')), '달력 창');
+      const pdf = path.join(ROOT, 'test', 'fixtures', 'timetable.pdf');
+      // 파일 선택 창 대신 시험 PDF를 고른 것으로 한다.
+      await a.evaluate(({ dialog }, filePath) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [filePath] }); }, pdf);
+      const before = await a.evaluate(() => globalThis.memoSyncTest.notes.active().map((note) => note.id));
+
+      await calA.locator('#btn-import').click();
+      await calA.locator('#import-person').fill('홍길동');
+      await calA.locator('#import-pick').click();
+      await waitFor(async () => (await calA.locator('#import-events li').count()) === 3, '찾은 일정 3개', 20000);
+      assert.match(await calA.locator('#import-status').textContent(), /'홍길동'의 일정 3개/);
+      if (SHOTS) await calA.screenshot({ path: path.join(SHOTS, 'pdf-import.png') });
+      // 하나는 빼고 추가한다.
+      await calA.locator('#import-events input').nth(1).uncheck();
+      await calA.locator('#import-add').click();
+      await waitFor(() => calA.locator('#import').isHidden(), '가져오기 닫힘');
+
+      const added = await waitFor(() => a.evaluate((_electron, ids) => globalThis.memoSyncTest.notes.active().find((note) => !ids.includes(note.id)), before), '새 메모');
+      assert.equal(added.content, '홍길동 일정 (timetable.pdf)\n2026년 11월 18일 1~5교시 종합실습 · 6~7교시 AI응용실습\n2026년 11월 24일 1~7교시 엣지컴퓨팅 · 9교시 보충수업');
+      const titlesOn = (app) => app.evaluate((_electron, noteId) => globalThis.memoSyncTest.calendar.view().events.filter((event) => event.noteId === noteId).map((event) => `${event.date} ${event.title}`), added.id);
+      await waitFor(async () => (await titlesOn(b)).length === 2, 'B 달력에 반영');
+      assert.deepEqual(await titlesOn(b), ['2026-11-18 1~5교시 종합실습 · 6~7교시 AI응용실습', '2026-11-24 1~7교시 엣지컴퓨팅 · 9교시 보충수업']);
+      assert.equal(await calA.locator('#month-title').textContent(), '2026년 11월');
+      assert.equal(await calA.locator('.cell[data-date="2026-11-18"] .chip').count(), 1);
+      assert.equal(await a.evaluate(() => globalThis.memoSyncTest.calendar.view().importPerson), '홍길동');
+
+      await a.evaluate((_electron, noteId) => globalThis.memoSyncTest.notes.remove(noteId), added.id);
+      await waitFor(async () => (await titlesOn(b)).length === 0, 'B에서 가져온 메모 제거');
+    });
+
     await step('A에서 확인 후 삭제 → 파일은 tombstone, B 창 닫힘', async () => {
       await pageA.locator('#btn-delete').click();
       assert.equal(await pageA.locator('#confirm').isVisible(), true);

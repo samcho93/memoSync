@@ -71,11 +71,12 @@ class CalendarWindow {
   }
 
   view() {
-    const { opacity, alwaysOnTop } = this._state();
+    const { opacity, alwaysOnTop, importPerson } = this._state();
     return {
       today: this.today,
       opacity,
       alwaysOnTop,
+      importPerson: typeof importPerson === 'string' ? importPerson : '',
       events: collectEvents(this.getNotes(), Number(this.today.slice(0, 4))),
     };
   }
